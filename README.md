@@ -22,7 +22,7 @@ A Python daemon that automatically backs up USB drives when they're connected to
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/yourusername/usb-auto-backup.git
+git clone https://github.com/charlessheard/usb-auto-backup.git
 cd usb-auto-backup
 ```
 
