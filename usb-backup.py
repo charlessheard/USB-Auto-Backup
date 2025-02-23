@@ -7,7 +7,7 @@ from pathlib import Path
 import psutil
 from typing import List, Tuple
 
-TARGET_FOLDER = Path("/home/user/USB_Backup/")
+TARGET_FOLDER = Path("/home/carlos/USB_Backup/")
 EXCLUDED_FOLDERS = {"Backup_drv", "data"}
 SLEEP_INTERVAL = 15
 
@@ -15,7 +15,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('/home/user/usb_backup.log'),
+        logging.FileHandler('/home/carlos/usb_backup.log'),
         logging.StreamHandler()
     ]
 )
