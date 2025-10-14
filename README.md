@@ -1,87 +1,52 @@
-# USB Backup Script
+USB Backup Service
+A Python-based automated backup service that monitors for USB device connections and automatically creates backups of mounted USB storage devices.
 
-A Python script that automatically detects and backs up USB drives to a specified folder on Arch Linux (or similar systems) using `rsync`. Designed to run continuously, it monitors for new USB insertions and performs incremental backups, excluding internal drives like NVMe or HDDs.
+Features
+Automatic Detection: Continuously monitors for newly mounted USB devices
 
-## Features
-- Detects removable USB drives using `psutil` and `lsblk`.
-- Backs up USB contents to `/home/carlos/USB_Backup/` with `rsync`.
-- Excludes internal drives (e.g., NVMe, HDDs) and specified folders.
-- Logs actions to `/home/carlos/usb_backup.log` and the terminal.
+Smart Filtering: Excludes system directories and specified folders from backup
 
-## Prerequisites
-- Python 3.x
-- Required Python packages: `psutil` (`pip install psutil`)
-- System tools: `rsync`, `lsblk`
-- Arch Linux (or similar Linux distro) with KDE (for `/run/media/` mounts)
+Reliable Identification: Uses lsblk with JSON parsing and udevadm for accurate USB device detection
 
-## Setup
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/charlessheard/usb-backup-script.git
-   cd usb-backup-script
-Install Dependencies:
-bash
-pip install psutil
-sudo pacman -S rsync  # If not already installed
-Make Executable:
-bash
-chmod +x usb_backup.py
-Run the Script:
-bash
-./usb_backup.py
-Logs will appear in /home/carlos/usb_backup.log.
-Backups will go to /home/carlos/USB_Backup/.
+Incremental Processing: Tracks processed devices to avoid duplicate backups
+
+Comprehensive Logging: Detailed logging to both file and console output
+
+Configurable: Easy to modify target directories, exclusions, and scan intervals
+
+How It Works
+Device Monitoring: Scans for mounted USB devices every 15 seconds (configurable)
+
+USB Verification: Uses udev properties to confirm USB connection and avoid system partitions
+
+Backup Creation: Creates complete copies of USB device contents to the target directory
+
+Clean Management: Removes existing backups before creating new ones to prevent conflicts
+
 Configuration
-Target Folder: Edit TARGET_FOLDER in the script (default: /home/carlos/USB_Backup/).
-Excluded Folders: Modify EXCLUDED_FOLDERS (default: {"Backup_drv", "data"}).
-Sleep Interval: Adjust SLEEP_INTERVAL (default: 15 seconds).
+TARGET_FOLDER: Backup destination directory (/home/carlos/USB_Backup/)
+
+EXCLUDED_FOLDERS: Folders to skip during backup (Backup_drv, data)
+
+SLEEP_INTERVAL: Seconds between device scans (15)
+
 Usage
-Run manually in a terminal to monitor USB insertions.
-Plug in a USB drive; it will back up to /home/carlos/USB_Backup/[USB_NAME]/.
-Check logs in /home/carlos/usb_backup.log for details.
-Running as a Service (Optional)
-Create a systemd service:
 bash
-sudo nano /etc/systemd/system/usb-backup.service
-ini
-[Unit]
-Description=USB Backup Service
-After=network.target
+python3 usb_backup_service.py
+The service runs continuously, automatically backing up any USB storage devices when they're connected.
 
-[Service]
-ExecStart=/path/to/usb_backup.py
-User=carlos
-WorkingDirectory=/path/to/script/dir
-Restart=on-failure
-StandardOutput=journal
+Requirements
+Python 3.6+
 
-[Install]
-WantedBy=multi-user.target
-Enable and start:
-bash
-sudo systemctl daemon-reload
-sudo systemctl enable usb-backup.service
-sudo systemctl start usb-backup.service
-Changelog
-Initial Version
-Used psutil.disk_partitions() to detect mounted devices.
-Identified USBs with "removable" in partition.opts (unreliable).
-Backed up to /home/carlos/USB_Backup/ with rsync.
-No logs appeared; USB detection inconsistent.
-Updates (Feb 23, 2025)
-Logging Fix: Added absolute log path (/home/carlos/usb_backup.log) to ensure logs are written.
-Detection Debug: Added logging.info to get_mountedlist() to list detected devices.
-USB Identification: Replaced "removable" check with mountpoint.startswith("/run/media/"), but this copied internal drives (e.g., NVMe).
-Final Version
-Improved Identification:
-Added is_removable() using lsblk -dno RM to check removability (RM=1 for USBs, RM=0 for internal).
-Excluded NVMe devices (/dev/nvme*) explicitly.
-Kept /run/media/ filter for KDE compatibility.
-Result: Only backs up removable USBs (e.g., /dev/sdd1), ignoring internal drives (e.g., /dev/nvme0n1p1, /dev/sdb1).
-Tested: Successfully backed up a USB drive on Arch Linux with KDE.
-Troubleshooting
-No Backup Happens: Check logs (/home/carlos/usb_backup.log) and ensure USB mounts under /run/media/ (KDE automount must be enabled).
-Wrong Drives Backed Up: Verify lsblk -o NAME,RM output matches script logic.
-Permissions: Ensure /home/carlos/USB_Backup/ is writable (chmod u+rwx /home/carlos/USB_Backup/).
-License
-MIT License - feel free to use and modify!
+Linux system with lsblk and udevadm utilities
+
+Appropriate permissions for device monitoring and file operations
+
+Use Cases
+Automated backup solutions for removable media
+
+Data preservation for photography, document transfer, or device migration
+
+Archival systems for frequently connected USB devices
+
+Perfect for users who regularly work with USB drives and need reliable, automated backup without manual intervention.
