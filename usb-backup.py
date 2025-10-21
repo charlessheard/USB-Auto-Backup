@@ -8,6 +8,10 @@ import json
 from typing import List, Tuple
 from pathlib import Path
 
+# Ensure the log directory exists
+log_dir = Path('/home/carlos/USB_Backup/')
+log_dir.mkdir(parents=True, exist_ok=True)
+
 # Configuration
 TARGET_FOLDER = Path("/home/carlos/USB_Backup/")
 EXCLUDED_FOLDERS = {"Backup_drv", "data"}
